@@ -1,5 +1,3 @@
-#include "pugixml.hpp"
-
 #include <gsl/gsl>
 
 #include <chrono>
@@ -11,8 +9,6 @@ void print(gsl::not_null<int*> value);
 int main (int argc, char** argv)
 {
     std::cout << "Start program" << std::endl;
-
-    pugi::xml_document doc;
 
     int* first = new int(5);
     int* second = nullptr;
