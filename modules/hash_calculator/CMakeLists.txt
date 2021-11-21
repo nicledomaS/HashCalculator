@@ -21,5 +21,5 @@ endif()
 static_library(${PROJECT_NAME}
                 SOURCES "src/"
                 THREADS
-                #BOOST system
+                BOOST
                 MODULES GSL)
