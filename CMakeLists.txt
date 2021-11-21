@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-project(CppProjectTemplate)
+project(HashCalculator)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -22,7 +22,7 @@ executable(${PROJECT_NAME}
             SOURCES "src/"
             THREADS
             #BOOST system
-            MODULES pugixml GSL)
+            MODULES hash_calculator GSL)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
 
