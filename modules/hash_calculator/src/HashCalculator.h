@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Utils.h"
+
 #include <boost/noncopyable.hpp>
 
 #include <string>
@@ -27,9 +29,8 @@ private:
     std::string m_inFilePath;
     std::string m_outFilePath;
     size_t m_blockSize;
+    FileDesc m_desc;
     std::vector<std::shared_ptr<Segment>> m_segments;
-    std::vector<std::shared_ptr<FileMapper>> m_mappers;
-    size_t m_numOfProcessedSections = 0;
 };
 
 } // hash_calculator

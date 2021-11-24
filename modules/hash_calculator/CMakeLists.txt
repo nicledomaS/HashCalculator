@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(hash_calculator)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(WIN32)
