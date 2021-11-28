@@ -32,3 +32,8 @@ jobs:
       with:
         path: build/*.tar.gz
         name: artifact_${{ matrix.os }}_${{ matrix.configs }}.tar.gz
+    - name: Test run
+      run: |
+        cd build
+        time ./HashCalculator --input=./HashCalculator --output=./out.txt --size=40
+        time md5sum ./HashCalculator

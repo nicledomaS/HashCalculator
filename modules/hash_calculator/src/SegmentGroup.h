@@ -16,6 +16,7 @@ class SegmentGroup final : public Segment
 {
 public:
     SegmentGroup(
+        int cpuCount,
         std::vector<std::shared_ptr<Segment>> segments,
         std::vector<std::shared_ptr<FileMapper>> mappers);
 
@@ -24,6 +25,7 @@ public:
     std::string getHash() const override;
 
 private:
+    int m_cpuCount;
     std::vector<std::shared_ptr<Segment>> m_segments;
     std::vector<std::shared_ptr<FileMapper>> m_mappers;
 };

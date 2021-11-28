@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include <fcntl.h>
+#include <sched.h> 
 
 namespace hash_calculator
 {
@@ -16,9 +17,31 @@ namespace
 constexpr auto MaxSingleBufSize = 200; // MB
 constexpr auto MaxPartBufSize = 50; // MB
 constexpr auto MaxBigSegmentCount = 4;
+constexpr auto MaxCpuCount = 4;
+
+static cpu_set_t mask;
+
+void assignCores(int cpuCount)
+{
+    CPU_ZERO(&mask);
+    int currentCpuId = 0;
+    while(currentCpuId < cpuCount)
+    {
+        CPU_SET(currentCpuId++, &mask);
+    }
+
+    if(sched_setaffinity(0, sizeof(mask), &mask) == 0)
+    {
+        std::cout << "Assigned " << cpuCount << " first CPUs" << std::endl;
+    }
+    else
+    {
+        std::cerr << "CPUs did not assigned" << std::endl;
+    }
+}
 
 std::vector<std::shared_ptr<Segment>> segmentsWithMinBlock(
-    const FileDesc& desc, long blockSize, long size, size_t segmentCount)
+    const FileDesc& desc, long blockSize, long size, int cpuCount, size_t segmentCount)
 {
     std::vector<std::shared_ptr<Segment>> groups;
     std::vector<std::shared_ptr<Segment>> segments;
@@ -45,7 +68,7 @@ std::vector<std::shared_ptr<Segment>> segmentsWithMinBlock(
 
         mappers.push_back(std::move(fileMapper));
 
-        auto groupSegment = std::make_shared<SegmentGroup>(std::move(segments), std::move(mappers));
+        auto groupSegment = std::make_shared<SegmentGroup>(cpuCount, std::move(segments), std::move(mappers));
         groups.push_back(std::move(groupSegment));
 
         pos += fileMapOffset;
@@ -55,7 +78,7 @@ std::vector<std::shared_ptr<Segment>> segmentsWithMinBlock(
 }
 
 std::vector<std::shared_ptr<Segment>> segmentsWithMaxBlock(
-    const FileDesc& desc, long blockSize, long size, size_t segmentCount = MaxBigSegmentCount)
+    const FileDesc& desc, long blockSize, long size, int cpuCount, size_t segmentCount = MaxBigSegmentCount)
 {
     std::vector<std::shared_ptr<Segment>> groups;
     std::vector<std::shared_ptr<Segment>> segments;
@@ -77,7 +100,7 @@ std::vector<std::shared_ptr<Segment>> segmentsWithMaxBlock(
 
         if(segments.size() == segmentCount || pos == desc.sb.st_size)
         {
-            auto segment = std::make_shared<SegmentGroup>(std::move(segments), std::move(mappers));
+            auto segment = std::make_shared<SegmentGroup>(cpuCount, std::move(segments), std::move(mappers));
             groups.push_back(std::move(segment));
         }
     }
@@ -106,6 +129,10 @@ FileDesc fileOpen(const std::string& inFilePath)
 
 std::vector<std::shared_ptr<Segment>> prepareSegments(const FileDesc& desc, size_t blockSize)
 {
+    auto allCpuCount = std::thread::hardware_concurrency();
+    auto cpuCount = allCpuCount > MaxCpuCount ? MaxCpuCount : allCpuCount;
+    assignCores(cpuCount);
+
     if(desc.sb.st_size == 0)
     {
         std::vector<std::shared_ptr<FileMapper>> mappers;
@@ -113,7 +140,7 @@ std::vector<std::shared_ptr<Segment>> prepareSegments(const FileDesc& desc, size
         auto fileMapper = std::make_shared<FileMapper>(desc.fd, 0, 0);
         segments.push_back(std::make_shared<SegmentImpl>(fileMapper, 0, 0, 0));
         mappers.push_back(std::move(fileMapper));
-        auto segmentGroup = std::make_shared<SegmentGroup>(std::move(segments), std::move(mappers));
+        auto segmentGroup = std::make_shared<SegmentGroup>(cpuCount, std::move(segments), std::move(mappers));
         return { segmentGroup };
     }
 
@@ -122,8 +149,8 @@ std::vector<std::shared_ptr<Segment>> prepareSegments(const FileDesc& desc, size
     auto size = segmentCount > 0 ? segmentCount * blockSizeInBytes : toBytes(MaxPartBufSize);
     
     return segmentCount > 1 ?
-        segmentsWithMinBlock(desc, blockSizeInBytes, size, segmentCount) :
-        segmentsWithMaxBlock(desc, blockSizeInBytes, size);
+        segmentsWithMinBlock(desc, blockSizeInBytes, size, cpuCount, segmentCount) :
+        segmentsWithMaxBlock(desc, blockSizeInBytes, size, cpuCount);
 }
 
 } // hash_calculator

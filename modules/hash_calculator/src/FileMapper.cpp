@@ -53,10 +53,10 @@ void FileMapper::mapping()
     if(!m_ptr)
     {
         std::cout << "Mapping" << std::endl;
-        std::cout << "m_startPosition: " << m_startPosition << std::endl;
-        std::cout << "m_maxBufsize: " << m_maxBufsize << std::endl;
+        std::cout << "Start position: " << m_startPosition << std::endl;
+        std::cout << "Max Bufsize: " << m_maxBufsize << std::endl;
         m_ptr = map(m_fd, m_startPosition, m_maxBufsize);
-        if(m_ptr == MAP_FAILED)
+        if(m_ptr == MAP_FAILED && m_maxBufsize)
         {
             throw std::runtime_error("Mapping is failed");
         }

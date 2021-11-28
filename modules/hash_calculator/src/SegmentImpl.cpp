@@ -52,6 +52,13 @@ SegmentImpl::SegmentImpl(
 
 void SegmentImpl::calcHash()
 {
+    if(m_offset == 0)
+    {
+        m_hash.get_digest(m_digest);
+        m_isReady = true;
+        return;
+    }
+
     while(!m_isReady)
     {
         auto diff = m_endPosition - m_currentPosition;
@@ -85,6 +92,11 @@ bool SegmentImpl::isReady() const
 
 std::string SegmentImpl::getHash() const
 {
+    if(!m_isReady)
+    {
+        throw std::runtime_error("Hash did not call");
+    }
+
     return toString(m_digest);
 }
 

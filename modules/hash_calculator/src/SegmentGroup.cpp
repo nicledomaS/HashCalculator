@@ -8,9 +8,11 @@ namespace hash_calculator
 {
 
 SegmentGroup::SegmentGroup(
+    int cpuCount,
     std::vector<std::shared_ptr<Segment>> segments,
     std::vector<std::shared_ptr<FileMapper>> mappers)
-    : m_segments(std::move(segments)),
+    : m_cpuCount(cpuCount),
+    m_segments(std::move(segments)),
     m_mappers(std::move(mappers))
 {
 }
@@ -27,7 +29,7 @@ void SegmentGroup::calcHash()
 
     while(nextIndex < m_segments.size() || !futures.empty())
     {
-        if(futures.size() < 4 && nextIndex < m_segments.size())
+        if(futures.size() < m_cpuCount && nextIndex < m_segments.size())
         {
             const auto& segment = m_segments[nextIndex++];
             auto feature = m_segments.size() == 1 ?

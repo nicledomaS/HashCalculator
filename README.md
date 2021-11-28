@@ -1,7 +1,7 @@
 [![License][license-image]][license-url]
 
 # HashCalculator
-C++ project template
+Utility for segmentation of file and calculate hash each segment
 
 ## Build project
 `cmake -B build -DFIND_MODULES=ON -DFIND_TESTS=ON -DENABLE_TIDY=ON`
