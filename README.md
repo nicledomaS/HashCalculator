@@ -1,6 +1,6 @@
 [![License][license-image]][license-url]
 
-# CppProjectTemplate
+# HashCalculator
 C++ project template
 
 ## Build project
