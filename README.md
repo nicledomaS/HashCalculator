@@ -13,6 +13,18 @@ C++ project template
 
 `ctest`
 
+## Application options
+```
+Allowed options:
+  --help                produce help message
+  --input arg           set input file
+  --output arg          set output file
+  --size arg            set segment size
+```
+
+## Run application
+`./HashCalculator --input=/home/pi/GOTURN.zip --output=./out.txt --size=400`
+
 ## Related project
 [Cmake scripts for build c++ projects](https://github.com/nicledomaS/cmake/blob/master/README.md)
 
