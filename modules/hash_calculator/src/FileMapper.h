@@ -1,8 +1,8 @@
 #pragma once
 
-#include <boost/noncopyable.hpp>
+#include <gsl/gsl>
 
-#include <vector>
+#include <boost/noncopyable.hpp>
 
 namespace hash_calculator
 {
@@ -10,15 +10,18 @@ namespace hash_calculator
 class FileMapper : private boost::noncopyable
 {
 public:
-    FileMapper(int fd, size_t maxBufsize);
+    FileMapper(int fd, size_t startPosition, size_t maxBufsize);
+    ~FileMapper();
 
-    void* getPtr(int currentPosition, size_t offset) const;
-    void mapping(int currentPosition, size_t offset);
-    void remapping(int currentPosition, size_t offset);
+    void* getPtr(size_t currentPosition, size_t offset) const;
+    void mapping();
+    void remapping(size_t startPosition, size_t offset);
 
 private:
     int m_fd;
-    std::vector<unsigned char> m_data;
+    size_t m_startPosition;
+    size_t m_maxBufsize;
+    void* m_ptr;
 };
 
 } // hash_calculator

@@ -1,32 +1,56 @@
-#include <gsl/gsl>
+#include "HashCalculator.h"
 
-#include <chrono>
-#include <thread>
+#include <boost/program_options.hpp>
+
 #include <iostream>
+#include <string>
+#include <memory>
 
-void print(gsl::not_null<int*> value);
+namespace program_opt = boost::program_options;
+
+constexpr auto Help = "help";
+constexpr auto Input = "input";
+constexpr auto Output = "output";
+constexpr auto Size = "size";
+constexpr auto DefaultSize = 1;
 
 int main (int argc, char** argv)
 {
-    std::cout << "Start program" << std::endl;
-
-    int* first = new int(5);
-    int* second = nullptr;
-    
-
-    while(true)
+    try
     {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        print(first);
-        print(second);
+        program_opt::options_description desc("Allowed options");
+        desc.add_options()
+        (Help, "produce help message")
+        (Input, program_opt::value<std::string>(), "set input file")
+        (Output, program_opt::value<std::string>(), "set output file")
+        (Size, program_opt::value<size_t>(), "set segment size");
+
+        program_opt::variables_map varMap;
+        program_opt::store(program_opt::parse_command_line(argc, argv, desc), varMap);
+        program_opt::notify(varMap);
+
+        if (varMap.count(Help) || !varMap.count(Input) || !varMap.count(Output)) {
+            std::cout << desc << "\n";
+            return 0;
+        }
+
+        auto input = varMap[Input].as<std::string>();
+        auto output = varMap[Output].as<std::string>();
+        auto segmentSize = varMap.count(Size) ? varMap[Size].as<size_t>() : DefaultSize;
+
+        auto hashCalc = std::make_unique<hash_calculator::HashCalculator>(
+            std::move(input), std::move(output), segmentSize);
+        hashCalc->calc();
+        hashCalc->saveResult();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "Exception of unknown type!" << std::endl;
     }
 
-    delete first;
-
     return 0;
-}
-
-void print(gsl::not_null<int*> value)
-{
-    std::cout << *value << std::endl;
 }

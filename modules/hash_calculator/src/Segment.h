@@ -10,9 +10,7 @@ namespace hash_calculator
 class Segment : private boost::noncopyable
 {
 public:
-    virtual ~Segment()
-    {
-    }
+    virtual ~Segment() = default;
 
     virtual void calcHash() = 0;
     virtual bool isReady() const = 0;

@@ -13,7 +13,7 @@ jobs:
     - name: boost
       run: |
         if [ "$RUNNER_OS" == "Linux" ]; then
-                sudo apt-get update && sudo apt-get install -yq libboost-dev
+                sudo apt-get update && sudo apt-get install -yq libboost-dev libboost-program-options-dev
         else
                 echo "$RUNNER_OS not supported" exit 1
         fi

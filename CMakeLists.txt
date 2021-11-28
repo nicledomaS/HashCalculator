@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 
 project(HashCalculator)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(WIN32)
@@ -21,7 +21,7 @@ endif()
 executable(${PROJECT_NAME}
             SOURCES "src/"
             THREADS
-            #BOOST system
+            BOOST program_options
             MODULES hash_calculator GSL)
 
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)

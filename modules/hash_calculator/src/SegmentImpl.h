@@ -18,8 +18,9 @@ class SegmentImpl final : public Segment
 {
 public:
     SegmentImpl(
-        std::shared_ptr<FileMapper> fileMapper,
-        int startPosition,
+        const std::shared_ptr<FileMapper>& fileMapper,
+        size_t startPosition,
+        size_t endPosition,
         size_t offset);
 
     void calcHash() override;
@@ -28,10 +29,12 @@ public:
 
 private:
     std::shared_ptr<FileMapper> m_fileMapper;
-    int m_startPosition;
-    int m_currentPosition;
+    size_t m_currentPosition;
+    size_t m_endPosition;
     size_t m_offset;
     MD5 m_hash;
+    MD5::digest_type m_digest;
+    bool m_isReady = false;
 };
 
 } // hash_calculator

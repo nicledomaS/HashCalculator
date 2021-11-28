@@ -10,10 +10,14 @@
 namespace hash_calculator
 {
 
+class FileMapper;
+
 class SegmentGroup final : public Segment
 {
 public:
-    SegmentGroup(std::vector<std::shared_ptr<Segment>> segments);
+    SegmentGroup(
+        std::vector<std::shared_ptr<Segment>> segments,
+        std::vector<std::shared_ptr<FileMapper>> mappers);
 
     void calcHash() override;
     bool isReady() const override;
@@ -21,7 +25,7 @@ public:
 
 private:
     std::vector<std::shared_ptr<Segment>> m_segments;
-    std::vector<std::future<void>> m_futures;
+    std::vector<std::shared_ptr<FileMapper>> m_mappers;
 };
 
 } // hash_calculator
